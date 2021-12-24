@@ -1,2 +1,2 @@
-PyYAML~=6.0
-Pillow~=8.4.0
+PyYAML
+Pillow
