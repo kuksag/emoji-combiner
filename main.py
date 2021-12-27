@@ -8,29 +8,29 @@ LOGGER_FILE = 'execution.log'
 CONFIG_FILE = 'config.yaml'
 RESOURCE_FOLDER = 'resource'
 RESULT_FOLDER = 'result'
-count = 0
+created = 0
 
 logging.basicConfig(filename=LOGGER_FILE, level=logging.DEBUG)
 
 
-def go_merge(types, bound=-1, accumulator=None, name='0'):
-    global count
-    if count == bound:
+def brute_force_gen(objects, count=-1, accumulator=None, name='0'):
+    global created
+    if created == count:
         return
 
-    if not types:
-        count += 1
+    if not objects:
+        created += 1
         accumulator.save(f'{RESULT_FOLDER}/{name}.png')
-        logging.info(f'Generated {name}, {bound - count} remaining')
+        logging.info(f'Generated {name}, {count - created} remaining')
         return
 
-    for i, obj in enumerate(os.listdir(f'{RESOURCE_FOLDER}/{types[0]}')):
-        this_obj = Image.open(f'{RESOURCE_FOLDER}/{types[0]}/{obj}')
+    for i, obj in enumerate(os.listdir(f'{RESOURCE_FOLDER}/{objects[0]}')):
+        this_obj = Image.open(f'{RESOURCE_FOLDER}/{objects[0]}/{obj}')
         new_acc = copy.copy(accumulator) or this_obj
-        go_merge(types=types[1:],
-                 bound=bound,
-                 accumulator=Image.alpha_composite(new_acc, this_obj),
-                 name=f'{name}-{i}')
+        brute_force_gen(objects=objects[1:],
+                        count=count,
+                        accumulator=Image.alpha_composite(new_acc, this_obj),
+                        name=f'{name}-{i}')
 
 
 def run():
@@ -48,15 +48,9 @@ def run():
 
     with open(CONFIG_FILE, 'r') as _config:
         config = yaml.safe_load(_config)
-        types = config['objects']
-        bound = config['bound']
-        generator = []
-        for type in types:
-            generator.append(list(map(lambda x: f"{RESOURCE_FOLDER}/{type}/{x}",
-                                      os.listdir(f"{RESOURCE_FOLDER}/{type}"))))
-        logging.info(f"Using this bound: {bound}")
-        logging.info(f'Found these types: {types}')
-        go_merge(types=types, bound=bound)
+        logging.info(f"Using this config:\n{config}")
+        brute_force_gen(objects=config['objects'],
+                        count=config['count'])
 
 
 if __name__ == '__main__':

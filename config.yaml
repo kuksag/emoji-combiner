@@ -1,10 +1,7 @@
-# List all expected objects
-# Order represents precedence
 objects:
   - "body"
   - "smile"
   - "eyes"
   - "hat"
-
-# Create at most this amount of images or -1 for max
-bound: -1
+count: 2
+random: False
