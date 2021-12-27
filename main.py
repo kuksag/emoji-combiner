@@ -12,7 +12,7 @@ RESULT_FOLDER = 'result'
 logging.basicConfig(filename=LOGGER_FILE, level=logging.DEBUG)
 
 
-def brute_force_gen(objects, to_create, accumulator=None, name='0'):
+def brute_force_gen(objects, to_create, accumulator=None, name=''):
     """
     Returns number of emojis that are to be created
     """
@@ -21,14 +21,15 @@ def brute_force_gen(objects, to_create, accumulator=None, name='0'):
         logging.info(f'Generated {name}, {to_create - 1} remaining')
         return to_create - 1
 
-    for i, obj in enumerate(os.listdir(f'{RESOURCE_FOLDER}/{objects[0]}')):
-        this_obj = Image.open(f'{RESOURCE_FOLDER}/{objects[0]}/{obj}')
+    type_name = list(objects[0].keys())[0]
+    for i, obj in enumerate(os.listdir(f'{RESOURCE_FOLDER}/{type_name}')):
+        this_obj = Image.open(f'{RESOURCE_FOLDER}/{type_name}/{obj}')
         new_acc = copy.copy(accumulator) or this_obj
         if to_create != 0:
             to_create = brute_force_gen(objects=objects[1:],
                                         to_create=to_create,
                                         accumulator=Image.alpha_composite(new_acc, this_obj),
-                                        name=f'{name}-{i}')
+                                        name=f'{name}-{obj[0:-4]}' if name else obj[0:-4])
     return to_create
 
 
@@ -48,8 +49,11 @@ def run():
     with open(CONFIG_FILE, 'r') as _config:
         config = yaml.safe_load(_config)
         logging.info(f"Using this config:\n{config}")
-        brute_force_gen(objects=config['objects'],
-                        to_create=config['count'])
+        if not config['random']:
+            brute_force_gen(objects=config['objects'],
+                            to_create=config['count'])
+        else:
+            generate_random(config)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,16 @@
-objects:
-  - "body"
-  - "smile"
-  - "eyes"
-  - "hat"
 count: 2
-random: False
+random: false
+seed: 1
+objects:
+  - body:
+      - name: "red body"
+        perc: 30
+  - smile:
+  - eyes:
+      - name: "crazy"
+        perc: 10
+      - name: "cute"
+        perc: 10
+      - name: "hearts"
+        perc: 30
+  - hat:
