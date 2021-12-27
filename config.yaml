@@ -1,6 +1,6 @@
-count: 2
+count: 10
 random: false
-seed: 1
+seed: 1337
 objects:
   - body:
       - name: "red body"
